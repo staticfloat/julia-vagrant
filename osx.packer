@@ -1,0 +1,66 @@
+{
+  "builders": [
+    {
+      "boot_wait": "2s",
+      "disk_size": 20480,
+      "guest_os_type": "{{user `os_type`}}",
+      "name": "{{user `name`}}",
+      "iso_checksum_type": "md5",
+      "iso_checksum": "{{user `md5`}}",
+      "iso_url": "{{user `img`}}",
+      "shutdown_command": "echo 'vagrant'|sudo -S shutdown -h now",
+      "skip_compaction": true,
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "ssh_wait_timeout": "10000s",
+      "tools_upload_flavor": "darwin",
+      "type": "vmware-iso",
+      "vmx_data": {
+        "cpuid.coresPerSocket": "1",
+        "memsize": "2048",
+        "numvcpus": "4",
+        "firmware": "efi",
+        "keyboardAndMouseProfile": "macProfile",
+        "smc.present": "TRUE",
+        "hpet0.present": "TRUE",
+        "ich7m.present": "TRUE",
+        "ehci.present": "TRUE",
+        "usb.present": "TRUE"
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "output": "../boxes/{{.BuildName}}.box",
+      "vagrantfile_template": "osx.vagrant"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "home/.bash_profile",
+      "destination": "/Users/vagrant/.bash_profile"
+    },
+    {
+      "type": "shell",
+      "execute_command": "chmod +x {{ .Path }}; sudo {{ .Vars }} {{ .Path }}",
+      "environment_vars": ["BUILD_NAME={{ user `name` }}"],
+      "scripts": [
+        "support/vagrant.sh",
+        "support/vmware.sh",
+        "support/xcode.sh",
+        "support/reboot.sh",
+        "support/brew.sh",
+        "support/buildbot.sh"
+      ]
+    }
+  ],
+  "variables": {
+    "md5": "",
+    "img": "",
+    "os_type": "",
+    "name": ""
+  }
+}

@@ -1,0 +1,15 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Boot with headless mode on all providers we care about
+  config.vm.provider :vmware_fusion do |v|
+    v.gui = false
+  end
+  config.vm.provider :vmware_workstation do |v|
+    v.gui = false
+  end
+  config.vm.provider :virtualbox do |v|
+    v.gui = true
+  end
+end

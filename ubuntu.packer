@@ -1,0 +1,84 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+        "<esc><wait>",
+        "<esc><wait>",
+        "<enter><wait>",
+        "/install/vmlinuz<wait>",
+        " auto<wait>",
+        " console-setup/ask_detect=false<wait>",
+        " console-setup/layoutcode=us<wait>",
+        " console-setup/modelcode=pc105<wait>",
+        " debconf/frontend=noninteractive<wait>",
+        " debian-installer=en_US<wait>",
+        " fb=false<wait>",
+        " initrd=/install/initrd.gz<wait>",
+        " kbd-chooser/method=us<wait>",
+        " keyboard-configuration/layout=USA<wait>",
+        " keyboard-configuration/variant=USA<wait>",
+        " locale=en_US<wait>",
+        " netcfg/get_hostname=ubuntu<wait>",
+        " netcfg/get_domain=vagrantup.com<wait>",
+        " noapic<wait>",
+        " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu_preseed.cfg<wait>",
+        " -- <wait>",
+        "<enter><wait>"
+      ],
+      "boot_wait": "4s",
+      "disk_size": 6000,
+      "disk_type_id": "0",
+      "guest_os_type": "linux",
+      "name": "{{user `name`}}",
+      "iso_checksum_type": "md5",
+      "iso_checksum": "{{user `md5`}}",
+      "iso_url": "{{user `img`}}",
+      "shutdown_command": "echo 'shutdown -P now' > /tmp/shutdown.sh; echo 'vagrant'|sudo -S sh '/tmp/shutdown.sh'",
+      "skip_compaction": true,
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "ssh_wait_timeout": "10000s",
+      "tools_upload_flavor": "linux",
+      "type": "vmware-iso",
+      "http_directory": "http",
+      "headless": true,
+      "vmx_data": {
+        "cpuid.coresPerSocket": "1",
+        "memsize": "2048",
+        "numvcpus": "4"
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "output": "boxes/{{.BuildName}}.box",
+      "vagrantfile_template": "ubuntu.vagrant"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "home/.bash_profile",
+      "destination": "/home/vagrant/.bash_profile"
+    },
+    {
+      "execute_command": "chmod +x {{ .Path }}; echo vagrant | sudo -S {{ .Vars }} '{{.Path}}'",
+      "environment_vars": ["BUILD_NAME={{ user `name` }}"],
+      "scripts": [
+        "support/apt_base.sh",
+        "support/reboot.sh",
+        "support/vagrant.sh",
+        "support/vmware.sh",
+        "support/cleanup.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "md5": "",
+    "img": "",
+    "name": ""
+  }
+}

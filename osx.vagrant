@@ -1,0 +1,18 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Templates that setup vmware to be headless!
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.provider :vmware_fusion do |v|
+    # Boot with headless mode
+    v.gui = false
+  end
+
+  config.vm.provider :vmware_workstation do |v|
+    # Boot with headless mode
+    v.gui = false
+  end
+
+  # start the buildslave!
+  config.vm.provision :shell, privileged: false, run: "always", inline: "cd ~/buildbot; source sandbox/bin/activate && buildslave start slave"
+end
