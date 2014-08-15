@@ -67,6 +67,7 @@
       "execute_command": "chmod +x {{ .Path }}; echo vagrant | sudo -S {{ .Vars }} '{{.Path}}'",
       "environment_vars": ["BUILD_NAME={{ user `name` }}"],
       "scripts": [
+        "support/linux_base.sh",
         "support/apt_base.sh",
         "support/reboot.sh",
         "support/vagrant.sh",

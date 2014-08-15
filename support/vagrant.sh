@@ -24,7 +24,7 @@ elif [[ $(uname -s) == "Linux" ]]; then
         RELEASE=unknown
     fi
 
-    if [[ $(uname -m) == "x64_86" ]]; then
+    if [[ $(uname -m) == "x86_64" ]]; then
         ARCH=x64
     else
         ARCH=x86

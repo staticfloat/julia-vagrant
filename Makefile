@@ -1,7 +1,10 @@
 ORIG_DIR=$(shell pwd)
 
+.SECONDARY:
+
 images/ubuntu%.iso:
 	# Parse out version and arch, download appropriate .ISO
+	# Note that some versions need minor versions added on to the end of them. :(
 	VERSION_ARCH=$(subst .iso,,$(subst images/ubuntu,,$@)); \
 	VERSION=$$(echo $$VERSION_ARCH | cut -d- -f1); \
 	ARCH=$$(echo $$VERSION_ARCH | cut -d- -f2); \
@@ -10,9 +13,27 @@ images/ubuntu%.iso:
 	else \
 		UBUNTU_ARCH="i386"; \
 	fi; \
+	if [ "$$VERSION" == "14.04" ]; then \
+		VERSION="14.04.1"; \
+	fi; \
+	if [ "$$VERSION" == "12.04" ]; then \
+		VERSION="12.04.5"; \
+	fi; \
 	wget -q -O- http://releases.ubuntu.com/$$VERSION/MD5SUMS | grep ubuntu-$$VERSION-server-$$UBUNTU_ARCH.iso | cut -d' ' -f1 > $@.md5; \
 	wget -c -O $@.tmp http://releases.ubuntu.com/$$VERSION/ubuntu-$$VERSION-server-$$UBUNTU_ARCH.iso; \
 	mv $@.tmp $@
+
+images/centos7.0-x64.iso:
+	wget -q -O- http://mirrors.mit.edu/centos/7.0.1406/isos/x86_64/md5sum.txt | grep CentOS-7.0-1406-x86_64-NetInstall.iso | cut -d' ' -f1 > $@.md5
+	wget -c -O $@.tmp http://mirrors.mit.edu/centos/7.0.1406/isos/x86_64/CentOS-7.0-1406-x86_64-NetInstall.iso
+	mv $@.tmp $@
+
+
+images/OSX_InstallESD_%.dmg:
+	# Get version, look for source file
+	VERSION=$$(echo $(subst images/OSX_InstallESD_,,$@) | cut -d_ -f1); \
+	
+
 
 # Rules to make base ubuntu boxes
 boxes/ubuntu%.box: images/ubuntu%.iso
@@ -21,7 +42,17 @@ boxes/ubuntu%.box: images/ubuntu%.iso
 	NAME=$(subst .box,,$(subst boxes/,,$@)); \
 	rm -rf output-$$NAME; \
 	packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME ubuntu.packer; \
-	rm -rf packer_cache
+	rm -rf packer_cache;
+
+# Rules to make base centos boxes
+boxes/centos%.box: images/centos%.iso
+	IMG=$^; \
+	MD5=$$(cat $^.md5); \
+	NAME=$(subst .box,,$(subst boxes/,,$@)); \
+	rm -rf output-$$NAME; \
+	packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME centos.packer; \
+	rm -rf packer_cache;
+
 
 
 # Rules for provisioning base ubuntu boxes into something we'd have dinner with
@@ -55,11 +86,14 @@ boxes/buildslave_%.box: boxes/%.box
 	$(MAKE) provision-buildslave_$(subst .box,,$(subst boxes/,,$^))
 
 
-# Build our buildmaster out of ubuntu14.04.1-x64
-buildmaster: boxes/buildmaster_ubuntu14.04.1-x64.box
+# Build our buildmaster out of ubuntu14.04-x64
+buildmaster: boxes/buildmaster_ubuntu14.04-x64.box
 
-buildslave_ubuntu14.04.1-x64: boxes/buildslave_ubuntu14.04.1-x64.box
-buildslave_ubuntu14.04.1-x86: boxes/buildslave_ubuntu14.04.1-x86.box
+buildslave_ubuntu14.04-x64: boxes/buildslave_ubuntu14.04-x64.box
+buildslave_ubuntu14.04-x86: boxes/buildslave_ubuntu14.04-x86.box
+
+buildslave_ubuntu12.04-x64: boxes/buildslave_ubuntu12.04-x64.box
+buildslave_ubuntu12.04-x86: boxes/buildslave_ubuntu12.04-x86.box
 
 
 clean:

@@ -21,6 +21,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell, privileged: false, path: "support/apt_julia.sh"
   config.vm.provision :shell, privileged: false, path: "support/buildbot_slave.sh"
 
+  # Setup disk resizing
+  config.vm.provision :shell, privileged: false, path: "support/install_resizedisk.sh"
+
   # Copy in our gpg key
   config.vm.provision :file do |file|
   	file.source = "~/.gnupg/sabae.key"

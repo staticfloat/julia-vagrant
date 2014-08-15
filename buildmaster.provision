@@ -19,4 +19,7 @@ Vagrant.configure("2") do |config|
   # Install the buildmaster
   config.vm.provision :shell, privileged: false, path: "support/apt_buildbot.sh"
   config.vm.provision :shell, privileged: false, path: "support/buildbot_master.sh"
+
+  # Setup disk resizing
+  config.vm.provision :shell, privileged: false, path: "support/install_resizedisk.sh"
 end
