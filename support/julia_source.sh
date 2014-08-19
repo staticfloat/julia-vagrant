@@ -32,7 +32,6 @@ if [[ "$(uname -s)" == "Linux" ]]; then
 
 	if [[ $(hostname) == arch* ]]; then
 		MAKEOPTS="$MAKEOPTS USE_SYSTEM_LIBUNWIND=1"
-		MAKEOPTS="$MAKEOPTS USE_SYSTEM_ARPACK=1"
 		MAKEOPTS="$MAKEOPTS USE_SYSTEM_SUITESPARSE=1"
 	fi
 

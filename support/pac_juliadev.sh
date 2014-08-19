@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PKGS="pcre gmp fftw mpfr unwind blas lapack arpack suitesparse"
+PKGS="pcre gmp fftw mpfr libunwind blas lapack suitesparse git gcc-fortran"
 
 for PKG in $PKGS; do
     echo "Installing $PKG"

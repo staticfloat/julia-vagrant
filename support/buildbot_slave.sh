@@ -21,4 +21,6 @@ pip install buildbot-slave
 buildslave create-slave --keepalive=100 slave buildbot.e.ip.saba.us:9989 $(hostname) julialang42
 
 # Setup buildbot to run at startup every time
-echo "@reboot cd $(echo ~)/buildbot; sandbox/bin/buildslave start slave" | crontab -u vagrant -
+sudo tee -a /etc/rc.local >/dev/null <<EOF
+cd $(echo ~)/buildbot; sandbox/bin/buildslave start slave &
+EOF

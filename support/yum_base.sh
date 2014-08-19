@@ -8,3 +8,5 @@ for PKG in $PKGS; do
     echo "Installing $PKG"
     sudo yum install -y $PKG
 done
+
+sudo easy_install pip
