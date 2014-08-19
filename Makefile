@@ -28,37 +28,74 @@ images/centos7.0-x64.iso:
 	wget -c -O $@.tmp http://mirrors.mit.edu/centos/7.0.1406/isos/x86_64/CentOS-7.0-1406-x86_64-NetInstall.iso
 	mv $@.tmp $@
 
+images/arch14.08-x64.iso:
+	wget -q -O- http://mirrors.mit.edu/archlinux/iso/2014.08.01/md5sums.txt | grep archlinux-2014.08.01-dual.iso | cut -d' ' -f1 > $@.md5
+	wget -c -O $@.tmp http://mirrors.mit.edu/archlinux/iso/2014.08.01/archlinux-2014.08.01-dual.iso
+	mv $@.tmp $@
+
 
 images/OSX_InstallESD_%.dmg:
-	# Get version, look for source file
+	# Get version, look for source file, convert!
 	VERSION=$$(echo $(subst images/OSX_InstallESD_,,$@) | cut -d_ -f1); \
-	
+	if [ ! -f images/OSX$$VERSION.* ]; then \
+		echo "Unable to find images/OSX$$VERSION.*, you must provide OSX installer packages!"; \
+		exit 1; \
+	fi; \
+	sudo images/prepare_iso.sh images/OSX$$VERSION.* images/
+	md5 -q $@ > $@.md5
 
 
-# Rules to make base ubuntu boxes
-boxes/ubuntu%.box: images/ubuntu%.iso
+boxes/osx10.7.box: images/OSX_InstallESD_10.7_11A511.dmg
+boxes/osx10.8.box: images/OSX_InstallESD_10.8_12A269.dmg
+boxes/osx10.9.box: images/OSX_InstallESD_10.9.4_13E28.dmg
+boxes/osx10.10.box: images/OSX_InstallESD_10.10_14A299l.dmg
+
+define UBUNTU_ISO
+boxes/ubuntu$(1).box: images/ubuntu$(1).iso
+endef
+$(foreach vers,12.04-x86 12.04-x64 14.04-x86 14.04-x64,$(eval $(call UBUNTU_ISO,$(vers))))
+
+define CENTOS_ISO
+boxes/centos$(1).box: images/centos$(1).iso
+endef
+$(foreach vers,7.0-x64,$(eval $(call CENTOS_ISO,$(vers))))
+
+boxes/arch14.08-x64.box: images/arch14.08-x64.iso
+
+
+
+# Put specific provisioning patterns first, so that we override the base boxes rule
+boxes/buildmaster_%.box: boxes/%.box
+	$(MAKE) provision-buildmaster_$(subst .box,,$(subst boxes/,,$^))
+boxes/buildslave_%.box: boxes/%.box
+	$(MAKE) provision-buildslave_$(subst .box,,$(subst boxes/,,$^))
+boxes/juliadev_%.box: boxes/%.box
+	$(MAKE) provision-juliadev_$(subst .box,,$(subst boxes/,,$^))
+boxes/juliabox_%.box: boxes/%.box
+	$(MAKE) provision-juliabox_$(subst .box,,$(subst boxes/,,$^))
+
+# Rules to make base boxes
+boxes/%.box:
+	@# Check to make sure we actually support building this guy
+	@if [ -z "$^" ]; then \
+		echo "ERROR: Target $@ is invalid, did your enormous sausage fingers mistype?!"; \
+		exit 1; \
+	fi
 	IMG=$^; \
 	MD5=$$(cat $^.md5); \
 	NAME=$(subst .box,,$(subst boxes/,,$@)); \
+	TEMPLATE=$$(echo $$NAME | sed -e 's/[0-9]/#/g' | cut -d# -f1 ); \
+	if [ "$$TEMPLATE" = "osx" ]; then \
+		OS_TYPE=darwin$$(($$(echo $$NAME | cut -c7-)+4))-64; \
+	fi; \
 	rm -rf output-$$NAME; \
-	packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME ubuntu.packer; \
+	packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME -var os_type=$$OS_TYPE $$TEMPLATE.packer; \
 	rm -rf packer_cache;
 
-# Rules to make base centos boxes
-boxes/centos%.box: images/centos%.iso
-	IMG=$^; \
-	MD5=$$(cat $^.md5); \
-	NAME=$(subst .box,,$(subst boxes/,,$@)); \
-	rm -rf output-$$NAME; \
-	packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME centos.packer; \
-	rm -rf packer_cache;
-
-
-
-# Rules for provisioning base ubuntu boxes into something we'd have dinner with
+# Rules for provisioning base boxes into something we'd have dinner with
 provision-%:
 	TEMPLATE_BOX=$(subst provision-,,$@); \
-	TEMPLATE=$$(echo $$TEMPLATE_BOX | cut -d_ -f1); \
+	TEMPLATE=$$(echo $$TEMPLATE_BOX | sed -e 's/[0-9]/#/g' | cut -d# -f1 ); \
 	BOX=$$(echo $$TEMPLATE_BOX | cut -d_ -f2); \
 	vagrant box remove -f $$BOX; \
 	vagrant box add $$BOX boxes/$$BOX.box; \
@@ -66,6 +103,7 @@ provision-%:
 	mkdir -p /tmp/julia-vagrant/$$TEMPLATE_BOX; \
 	cd /tmp/julia-vagrant/$$TEMPLATE_BOX; \
 	vagrant init $$BOX; \
+	rm Vagrantfile; \
 	cp -f $(ORIG_DIR)/$$TEMPLATE.provision Vagrantfile; \
 	sed -i .bak -e "s/BOX_NAME/$$BOX/g" Vagrantfile; \
 	rm Vagrantfile.bak; \
@@ -79,22 +117,9 @@ provision-%:
 	vagrant destroy -f;
 
 
-boxes/buildmaster_%.box: boxes/%.box
-	$(MAKE) provision-buildmaster_$(subst .box,,$(subst boxes/,,$^))
 
-boxes/buildslave_%.box: boxes/%.box
-	$(MAKE) provision-buildslave_$(subst .box,,$(subst boxes/,,$^))
-
-
-# Build our buildmaster out of ubuntu14.04-x64
-buildmaster: boxes/buildmaster_ubuntu14.04-x64.box
-
-buildslave_ubuntu14.04-x64: boxes/buildslave_ubuntu14.04-x64.box
-buildslave_ubuntu14.04-x86: boxes/buildslave_ubuntu14.04-x86.box
-
-buildslave_ubuntu12.04-x64: boxes/buildslave_ubuntu12.04-x64.box
-buildslave_ubuntu12.04-x86: boxes/buildslave_ubuntu12.04-x86.box
-
-
+# This is pretty aggressive.  Oh well.
 clean:
 	rm -f boxes/*.box openstack/*.qcow2
+
+

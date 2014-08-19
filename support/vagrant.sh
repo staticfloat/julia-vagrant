@@ -19,7 +19,19 @@ elif [[ $(uname -s) == "Linux" ]]; then
         source /etc/lsb-release
         DISTRIB=$(echo $DISTRIB_ID | tr '[:upper:]' '[:lower:]')
         RELEASE=$DISTRIB_RELEASE
-    elif [[ -f /etc/system-release ]]; then
+    elif [[ -f /etc/centos-release ]]; then
+        source /etc/os-release
+        DISTRIB=$ID
+        RELEASE=$VERSION_ID
+        # Force "7" to be "7.0"
+        if [[ "$RELEASE" == "7" ]]; then
+            RELEASE="7.0"
+        fi
+    elif [[ -f /etc/arch-release ]]; then
+        # Arch doesn't really have release numbers, so we hardcode 14.08 bceause that's the image we start from
+        DISTRIB=arch
+        RELEASE=14.08
+    else
         DISTRIB=linux
         RELEASE=unknown
     fi

@@ -1,29 +1,10 @@
 {
   "builders": [
-    {
+      {
       "boot_command": [
-        "<esc><wait>",
-        "<esc><wait>",
-        "<enter><wait>",
-        "/install/vmlinuz<wait>",
-        " auto<wait>",
-        " console-setup/ask_detect=false<wait>",
-        " console-setup/layoutcode=us<wait>",
-        " console-setup/modelcode=pc105<wait>",
-        " debconf/frontend=noninteractive<wait>",
-        " debian-installer=en_US<wait>",
-        " fb=false<wait>",
-        " initrd=/install/initrd.gz<wait>",
-        " kbd-chooser/method=us<wait>",
-        " keyboard-configuration/layout=USA<wait>",
-        " keyboard-configuration/variant=USA<wait>",
-        " locale=en_US<wait>",
-        " netcfg/get_hostname=ubuntu<wait>",
-        " netcfg/get_domain=vagrantup.com<wait>",
-        " noapic<wait>",
-        " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu_preseed.cfg<wait>",
-        " -- <wait>",
-        "<enter><wait>"
+        "<enter><wait10><wait10>",
+        "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/arch_base.sh<enter><wait5>",
+        "/usr/bin/bash ./arch_base.sh<enter>"
       ],
       "boot_wait": "4s",
       "disk_size": 6000,
@@ -67,8 +48,6 @@
       "environment_vars": ["BUILD_NAME={{ user `name` }}"],
       "scripts": [
         "support/linux_base.sh",
-        "support/apt_base.sh",
-        "support/reboot.sh",
         "support/vagrant.sh",
         "support/cleanup.sh"
       ],

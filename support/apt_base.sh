@@ -1,6 +1,7 @@
 #!/bin/bash
-# This file for Linux only, obviously
 
+# Clear out the cache in case something went horribly wrong
+sudo rm -fR /var/lib/apt/lists/*
 sudo apt-get update
 sudo apt-get -y upgrade
 sudo apt-get -y install software-properties-common
@@ -9,7 +10,7 @@ sudo apt-get -y install software-properties-common
 PKGS="linux-headers-$(uname -r) curl git build-essential g++ gcc"
 
 # These are needed because they're awesome
-PKGS="$PKGS htop"
+PKGS="$PKGS htop tmux"
 
 for PKG in $PKGS; do
     echo "Installing $PKG"

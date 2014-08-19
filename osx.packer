@@ -9,7 +9,6 @@
       "iso_checksum": "{{user `md5`}}",
       "iso_url": "{{user `img`}}",
       "shutdown_command": "echo 'vagrant'|sudo -S shutdown -h now",
-      "skip_compaction": true,
       "ssh_password": "vagrant",
       "ssh_port": 22,
       "ssh_username": "vagrant",
@@ -52,8 +51,7 @@
         "support/vmware.sh",
         "support/xcode.sh",
         "support/reboot.sh",
-        "support/brew.sh",
-        "support/buildbot.sh"
+        "support/brew.sh"
       ]
     }
   ],

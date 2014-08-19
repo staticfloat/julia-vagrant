@@ -3,22 +3,11 @@
 # This file used only for provisioning after boxing
 
 Vagrant.configure("2") do |config|
-  # Boot with headless mode on all providers we care about
-  config.vm.provider :vmware_fusion do |v|
-    v.gui = false
-  end
-  config.vm.provider :vmware_workstation do |v|
-    v.gui = false
-  end
-  config.vm.provider :virtualbox do |v|
-    v.gui = true
-  end
-
   config.vm.box = "BOX_NAME"
 
   # Install the buildslave
   config.vm.provision :shell, privileged: false, path: "support/apt_buildbot.sh"
-  config.vm.provision :shell, privileged: false, path: "support/apt_julia.sh"
+  config.vm.provision :shell, privileged: false, path: "support/apt_juliadev.sh"
   config.vm.provision :shell, privileged: false, path: "support/buildbot_slave.sh"
 
   # Setup disk resizing

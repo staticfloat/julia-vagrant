@@ -1,0 +1,13 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# This file used only for provisioning after boxing
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "BOX_NAME"
+
+  # Install julia
+  config.vm.provision :shell, privileged: false, path: "support/apt_juliabox.sh"
+
+  # Setup disk resizing
+  config.vm.provision :shell, privileged: false, path: "support/install_resizedisk.sh"
+end

@@ -38,13 +38,23 @@ elif [[ $(uname -s) == "Linux" ]]; then
     TMPMOUNT=`mktemp -d /tmp/vmware-tools.XXXX`
     mount $TOOLS_PATH $TMPMOUNT
 
-    ls -la $TMPMOUNT
-    tar zxvf $TMPMOUNT/VMwareTools-*.tar.gz -C /tmp/
-    cd /tmp/vmware-tools-distrib
-    echo "PRE VMWARE-INSTALL"
-    ./vmware-install.pl -d
-    echo "POST VMWARE-INSTALL: $?"
-    #apt-get -y install open-vm-tools
-    #echo -n ".host:/ /mnt/hgfs vmhgfs rw,ttl=1,uid=my_uid,gid=my_gid,nobootwait 0 0" >> /etc/fstab
+    mkdir /tmp/vmware-build
+    cd /tmp/vmware-build
+    curl -L https://github.com/rasa/vmware-tools-patches/archive/master.tar.gz | tar zxv --strip=1
+    cp $TMPMOUNT/VMwareTools-*.tar.gz .
+
+    # Make fake /etc/init.d/rcX.d folders
+    if [[ ! -d /etc/init.d/rc0.d ]]; then
+        for x in {0..6}; do
+            mkdir -p /etc/init.d/rc$x.d
+        done
+    fi
+
+    # Remove all folders except for vmhgfs!
+    rm -rf patches/{pvscsi,vmblock,vmci,vmmemctl,vmsync,vmxnet,vmxnet3,vsock}
+    # remove all remaining patches except the ones we want!
+    rm -rf patches/vmhgfs/vmhgfs-uid*
+    rm -rf patches/vmhgfs/vmware9*
+
+    ./untar-and-patch-and-compile.sh
 fi
-echo "We done here"
