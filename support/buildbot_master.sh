@@ -15,10 +15,13 @@ pip install buildbot
 buildbot create-master master
 
 # Setup buildbot to run at startup every time
-sudo tee -a /etc/rc.local >/dev/null <<EOF
-cd $(echo ~)/buildbot && sandbox/bin/buildbot start master &
-cd $(echo ~)/buildbot && ./launch_github.sh &
+crontab -l > /tmp/crontab
+tee -a /tmp/crontab >/dev/null <<EOF
+@reboot cd $(echo ~)/buildbot && sandbox/bin/buildbot start master &
+@reboot cd $(echo ~)/buildbot && ./launch_github.sh &
 EOF
+crontab /tmp/crontab
+
 
 # Set our hostname to "buildbot"
 echo buildbot | sudo tee /etc/hostname >/dev/null

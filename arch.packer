@@ -3,6 +3,11 @@
       {
       "boot_command": [
         "<enter><wait10><wait10>",
+        "ip link set dev ens33 down<enter><wait5>",
+        "ip link set dev ens33 address $(hexdump -n3 -e'/3 \"00:60:2F\" 3/1 \":%02X\"' /dev/random)<enter><wait5>",
+        "ip link set dev ens33 up<enter><wait5>",
+        "dhcpcd -k ens33<enter><wait5>",
+        "dhcpcd ens33<enter><wait5>",
         "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/arch_base.sh<enter><wait5>",
         "/usr/bin/bash ./arch_base.sh<enter>"
       ],
@@ -48,6 +53,7 @@
       "environment_vars": ["BUILD_NAME={{ user `name` }}"],
       "scripts": [
         "support/linux_base.sh",
+        "support/pac_base.sh",
         "support/vagrant.sh",
         "support/cleanup.sh"
       ],

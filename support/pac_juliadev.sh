@@ -6,3 +6,5 @@ for PKG in $PKGS; do
     echo "Installing $PKG"
     sudo pacman --noconfirm -S $PKG
 done
+
+echo "Done installing packages"
