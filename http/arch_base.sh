@@ -33,11 +33,11 @@ echo '==> bootstrapping the base installation'
 /usr/bin/pacstrap ${TARGET_DIR} base base-devel
 /usr/bin/arch-chroot ${TARGET_DIR} pacman -S --noconfirm gptfdisk openssh syslinux net-tools
 /usr/bin/arch-chroot ${TARGET_DIR} syslinux-install_update -i -a -m
-/usr/bin/sed -i 's/sda3/sda1/' "${TARGET_DIR}/boot/syslinux/syslinux.cfg"
+/usr/bin/sed -i "s_/dev/sda3_UUID=$(lsblk --output UUID -n /dev/sda1)_" "${TARGET_DIR}/boot/syslinux/syslinux.cfg"
 /usr/bin/sed -i 's/TIMEOUT 50/TIMEOUT 10/' "${TARGET_DIR}/boot/syslinux/syslinux.cfg"
 
 echo '==> generating the filesystem table'
-/usr/bin/genfstab -p ${TARGET_DIR} >> "${TARGET_DIR}/etc/fstab"
+/usr/bin/genfstab -U -p ${TARGET_DIR} >> "${TARGET_DIR}/etc/fstab"
 
 echo '==> generating the system configuration script'
 /usr/bin/install --mode=0755 /dev/null "${TARGET_DIR}${CONFIG_SCRIPT}"
@@ -48,6 +48,9 @@ cat <<-EOF > "${TARGET_DIR}${CONFIG_SCRIPT}"
     echo 'KEYMAP=${KEYMAP}' > /etc/vconsole.conf
     /usr/bin/sed -i 's/#${LANGUAGE}/${LANGUAGE}/' /etc/locale.gen
     /usr/bin/locale-gen
+    echo 'LANG=${LANGUAGE}' > /etc/locale.conf
+    echo 'LC_MESSAGES=${LANGUAGE}' >> /etc/locale.conf
+    /usr/bin/sed -i 's/MODULES=""/MODULES="virtio virtio_blk virtio_pci virtio_net virtio_ring"/' /etc/mkinitcpio.conf
     /usr/bin/mkinitcpio -p linux
     /usr/bin/usermod --password ${PASSWORD} root
     # https://wiki.archlinux.org/index.php/Network_Configuration#Device_names

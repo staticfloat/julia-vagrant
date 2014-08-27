@@ -3,16 +3,11 @@
       {
       "boot_command": [
         "<enter><wait10><wait10>",
-        "ip link set dev ens33 down<enter><wait5>",
-        "ip link set dev ens33 address $(hexdump -n3 -e'/3 \"00:60:2F\" 3/1 \":%02X\"' /dev/random)<enter><wait5>",
-        "ip link set dev ens33 up<enter><wait5>",
-        "dhcpcd -k ens33<enter><wait5>",
-        "dhcpcd ens33<enter><wait5>",
         "/usr/bin/curl -O http://{{.HTTPIP}}:{{.HTTPPort}}/arch_base.sh<enter><wait5>",
         "/usr/bin/bash ./arch_base.sh<enter>"
       ],
       "boot_wait": "4s",
-      "disk_size": 6000,
+      "disk_size": 9500,
       "disk_type_id": "0",
       "guest_os_type": "linux",
       "name": "{{user `name`}}",

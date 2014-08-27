@@ -2,7 +2,7 @@
 
 sudo pacman -Syu
 
-PKGS="perl linux-headers net-tools git python2 python2-pip htop tmux cronie"
+PKGS="perl linux-headers net-tools git python2 python2-pip htop tmux cronie parted"
 
 for PKG in $PKGS; do
     echo "Installing $PKG"

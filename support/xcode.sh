@@ -34,5 +34,14 @@ else
     rm "$TOOLS"
 fi
 
+# Let's fake out xcrun
+xcode-select -switch /usr/bin
+mv /usr/bin/xcrun /usr/bin/xcrun-orig
+tee /usr/bin/xcrun <<EOF
+#!/bin/sh
+\$@
+EOF
+chmod +x /usr/bin/xcrun
+
 # Finally, install all software updates we can get our grubby little hands on
 softwareupdate -i -a

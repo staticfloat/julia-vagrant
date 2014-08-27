@@ -26,7 +26,7 @@
         "<enter><wait>"
       ],
       "boot_wait": "4s",
-      "disk_size": 6000,
+      "disk_size": 9500,
       "disk_type_id": "0",
       "guest_os_type": "linux",
       "name": "{{user `name`}}",

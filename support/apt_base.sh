@@ -7,7 +7,7 @@ sudo apt-get -y upgrade
 sudo apt-get -y install software-properties-common python-software-properties
 
 # These are needed for the rest of the provisioning process
-PKGS="linux-headers-$(uname -r) curl git build-essential g++ gcc python-pip python-dev python"
+PKGS="linux-headers-$(uname -r) linux-virtual curl git build-essential g++ gcc python-pip python-dev python"
 
 # These are needed because they're awesome
 PKGS="$PKGS htop tmux"
