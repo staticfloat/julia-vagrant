@@ -112,6 +112,7 @@ provision-%:
 	vagrant up; \
 	vagrant halt; \
 	cd $$(dirname $$(find . -name disk.vmdk)); \
+	mkdir -p $(ORIG_DIR)/openstack; \
 	qemu-img convert -p -f vmdk -O qcow2 disk.vmdk $(ORIG_DIR)/openstack/$$TEMPLATE_BOX.qcow2; \
 	tar cvzf $(ORIG_DIR)/boxes/$$TEMPLATE_BOX.box ./*; \
 	cd /tmp/julia-vagrant/$$TEMPLATE_BOX; \
