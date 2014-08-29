@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 ORIG_DIR=$(shell pwd)
 
 .SECONDARY:
