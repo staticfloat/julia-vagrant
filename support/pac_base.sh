@@ -13,3 +13,6 @@ done
 cd /usr/bin
 sudo ln -s pip2 pip
 sudo ln -s python2 python
+
+# Enable cronie
+sudo systemctl enable cronie

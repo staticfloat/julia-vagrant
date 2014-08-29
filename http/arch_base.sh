@@ -57,6 +57,7 @@ cat <<-EOF > "${TARGET_DIR}${CONFIG_SCRIPT}"
     /usr/bin/ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
     /usr/bin/ln -s '/usr/lib/systemd/system/dhcpcd@.service' '/etc/systemd/system/multi-user.target.wants/dhcpcd@eth0.service'
     /usr/bin/systemctl enable sshd.service
+    echo ip route add default via \\\$new_routers > /usr/lib/dhcpcd/dhcpcd-hooks/40-default_route
 
     # Create vagrant user
     /usr/bin/useradd --password ${PASSWORD} --comment 'Vagrant User' --create-home --gid users vagrant
