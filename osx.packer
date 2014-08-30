@@ -32,7 +32,7 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "output": "../boxes/{{.BuildName}}.box",
+      "output": "boxes/{{.BuildName}}.box",
       "vagrantfile_template": "osx.vagrant"
     }
   ],
@@ -50,7 +50,6 @@
         "support/vagrant.sh",
         "support/vmware.sh",
         "support/xcode.sh",
-        "support/reboot.sh",
         "support/brew.sh"
       ]
     }

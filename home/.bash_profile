@@ -30,3 +30,17 @@ function updatePS1()
 
 # Actually call it
 updatePS1
+
+# Setup nice aliases for starting/stopping buildslaves
+alias buildslave_start="(cd ~/buildbot && sandbox/bin/buildslave start slave)"
+alias buildslave_stop="(cd ~/buildbot && sandbox/bin/buildslave stop slave)"
+function buildslave_pause
+{
+    PAUSE="$1"
+    if [[ -z "$PAUSE" ]]; then
+        PAUSE=3600
+    fi
+    buildslave_stop
+    echo "Starting buildslave again in $PAUSE seconds"
+    (sleep $PAUSE && buildslave_start >/dev/null 2>/dev/null) &
+}
