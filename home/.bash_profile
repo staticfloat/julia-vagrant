@@ -44,3 +44,19 @@ function buildslave_pause
     echo "Starting buildslave again in $PAUSE seconds"
     (sleep $PAUSE && buildslave_start >/dev/null 2>/dev/null) &
 }
+
+# look for an unattached session. Also filter out sessions with names that start with _
+session=$(tmux list-sessions 2>/dev/null | egrep -v "\(attached\)$" | cut -d: -f1 | egrep -v "^_" | head -1)
+
+if [[ $? != 0 ]]; then
+    # This means that tmux isn't even running
+    session=0
+    tmux new-session -d -s $session
+elif [[ -z "$session" ]]; then
+    # This means that there are no unattached sessions.  Let's come up with a new (unique) session number:
+    session=$(tmux list-sessions 2>/dev/null | egrep -v "^_" | awk -F: '{if(max==""){max=$1}; if($1>max) {max=$1}}; END {print max+1;}')
+    tmux new-session -d -s $session
+fi
+
+# Finally, we attach to that session
+tmux attach -t $session
