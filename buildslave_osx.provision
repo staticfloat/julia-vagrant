@@ -1,0 +1,11 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# This file used only for provisioning after boxing
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "BOX_NAME"
+
+  # Install the buildslave
+  config.vm.provision :shell, privileged: false, path: "support/brew_juliadev.sh"
+  config.vm.provision :shell, privileged: false, path: "support/buildbot_slave.sh"
+end

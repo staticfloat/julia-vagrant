@@ -50,7 +50,7 @@
         "support/vagrant.sh",
         "support/vmware.sh",
         "support/xcode.sh",
-        "support/brew.sh"
+        "support/brew_base.sh"
       ]
     }
   ],
