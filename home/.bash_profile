@@ -1,6 +1,9 @@
+# If not running interactively, run like a coward
+[[ -z "$PS1" ]] && return;
+
 # include brew on our path
 if [[ $(uname -s) == "Darwin" ]]; then
-	export PATH=$PATH:/usr/local/bin:/usr/local/sbin
+	export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 	export HOMEBREW_DEVELOPER=1
 fi
 
@@ -45,18 +48,23 @@ function buildslave_pause
     (sleep $PAUSE && buildslave_start >/dev/null 2>/dev/null) &
 }
 
-# look for an unattached session. Also filter out sessions with names that start with _
-session=$(tmux list-sessions 2>/dev/null | egrep -v "\(attached\)$" | cut -d: -f1 | egrep -v "^_" | head -1)
 
-if [[ $? != 0 ]]; then
-    # This means that tmux isn't even running
-    session=0
-    tmux new-session -d -s $session
-elif [[ -z "$session" ]]; then
-    # This means that there are no unattached sessions.  Let's come up with a new (unique) session number:
-    session=$(tmux list-sessions 2>/dev/null | egrep -v "^_" | awk -F: '{if(max==""){max=$1}; if($1>max) {max=$1}}; END {print max+1;}')
-    tmux new-session -d -s $session
+# If we're not inside tmux, try to attach:
+if [[ -z "$TMUX" ]]; then
+    # look for an unattached session. Also filter out sessions with names that start with _
+    session=$(tmux list-sessions 2>/dev/null | egrep -v "\(attached\)$" | cut -d: -f1 | egrep -v "^_" | head -1)
+
+    if [[ $? != 0 ]]; then
+        # This means that tmux isn't even running
+        session=0
+        tmux new-session -d -s $session
+    elif [[ -z "$session" ]]; then
+        # This means that there are no unattached sessions.  Let's come up with a new (unique) session number:
+        session=$(tmux list-sessions 2>/dev/null | egrep -v "^_" | awk -F: '{if(max==""){max=$1}; if($1>max) {max=$1}}; END {print max+1;}')
+        tmux new-session -d -s $session
+    fi
+
+    # Finally, we attach to that session
+    tmux attach -t $session
+    echo "You have now exited tmux, exit again to disconnect"
 fi
-
-# Finally, we attach to that session
-tmux attach -t $session

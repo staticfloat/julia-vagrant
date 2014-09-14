@@ -1,6 +1,28 @@
 {
   "builders": [
     {
+      "type": "qemu",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/centos_kickstart.cfg<enter><wait>"
+      ],
+      "boot_wait": "4s",
+      "disk_size": 9500,
+      "format": "qcow2",
+      "accelerator":"none",
+      "name": "{{user `name`}}_qemu",
+      "iso_checksum_type": "md5",
+      "iso_checksum": "{{user `md5`}}",
+      "iso_url": "{{user `img`}}",
+      "shutdown_command": "echo '/sbin/halt -h -p' > /tmp/shutdown.sh; echo 'vagrant'|sudo -S sh '/tmp/shutdown.sh'",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "ssh_wait_timeout": "10000s",
+      "http_directory": "http",
+      "headless": true
+    },
+    {
+      "type": "vmware-iso",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/centos_kickstart.cfg<enter><wait>"
       ],
@@ -8,7 +30,7 @@
       "disk_size": 9500,
       "disk_type_id": "0",
       "guest_os_type": "linux",
-      "name": "{{user `name`}}",
+      "name": "{{user `name`}}_vmware",
       "iso_checksum_type": "md5",
       "iso_checksum": "{{user `md5`}}",
       "iso_url": "{{user `img`}}",
@@ -18,7 +40,6 @@
       "ssh_username": "vagrant",
       "ssh_wait_timeout": "10000s",
       "tools_upload_flavor": "linux",
-      "type": "vmware-iso",
       "http_directory": "http",
       "headless": true,
       "vmx_data": {

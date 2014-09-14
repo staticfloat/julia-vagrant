@@ -6,7 +6,7 @@ if [[ $(uname -s) == "Darwin" ]]; then
     OSX_VERS=$(sw_vers -productVersion | awk -F "." '{print $2}')
 
     # Set computer/hostname
-    COMPNAME=osx-10.${OSX_VERS}
+    COMPNAME=osx10.${OSX_VERS}
     scutil --set ComputerName ${COMPNAME}
     scutil --set HostName ${COMPNAME}
 
