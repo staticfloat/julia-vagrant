@@ -49,7 +49,7 @@ images/OSX_InstallESD_%.dmg:
 boxes/osx10.7.box: images/OSX_InstallESD_10.7_11A511.dmg
 boxes/osx10.8.box: images/OSX_InstallESD_10.8_12A269.dmg
 boxes/osx10.9.box: images/OSX_InstallESD_10.9.4_13E28.dmg
-boxes/osx10.10.box: images/OSX_InstallESD_10.10_14A299l.dmg
+boxes/osx10.10.box: images/OSX_InstallESD_10.10_14A389.dmg
 
 define UBUNTU_ISO
 boxes/ubuntu$(1).box: images/ubuntu$(1).iso
