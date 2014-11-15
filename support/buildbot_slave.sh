@@ -18,7 +18,7 @@ source sandbox/bin/activate
 pip install buildbot-slave
 
 # We don't care that we're leaking the "secret" here
-buildslave create-slave --keepalive=100 slave buildbot.e.ip.saba.us:9989 $(hostname) julialang42
+buildslave create-slave --keepalive=100 --umask 022 slave buildbot.e.ip.saba.us:9989 $(hostname) julialang42
 
 # let's personalize this buildslave a bit
 echo "Elliot Saba <staticfloat@gmail.com>" > slave/info/admin
