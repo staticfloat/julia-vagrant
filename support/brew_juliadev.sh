@@ -6,3 +6,4 @@ export PATH="$PATH:/usr/local/bin:/usr/local/sbin"
 # Install all julia dependencies
 brew tap staticfloat/julia
 brew install --only-dependencies julia
+brew install --only-dependencies --HEAD julia
