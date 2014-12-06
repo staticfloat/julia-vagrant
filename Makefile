@@ -29,9 +29,9 @@ images/centos7.0-x64.iso:
 	wget -c -O $@.tmp http://mirrors.mit.edu/centos/7.0.1406/isos/x86_64/CentOS-7.0-1406-x86_64-NetInstall.iso
 	mv $@.tmp $@
 
-images/arch14.08-x64.iso:
-	wget -q -O- http://mirrors.mit.edu/archlinux/iso/2014.08.01/md5sums.txt | grep archlinux-2014.08.01-dual.iso | cut -d' ' -f1 > $@.md5
-	wget -c -O $@.tmp http://mirrors.mit.edu/archlinux/iso/2014.08.01/archlinux-2014.08.01-dual.iso
+images/arch14.11-x64.iso:
+	wget -q -O- http://mirrors.mit.edu/archlinux/iso/2014.11.01/md5sums.txt | grep archlinux-2014.11.01-dual.iso | cut -d' ' -f1 > $@.md5
+	wget -c -O $@.tmp http://mirrors.mit.edu/archlinux/iso/2014.11.01/archlinux-2014.11.01-dual.iso
 	mv $@.tmp $@
 
 
@@ -61,7 +61,7 @@ boxes/centos$(1).box: images/centos$(1).iso
 endef
 $(foreach vers,7.0-x64,$(eval $(call CENTOS_ISO,$(vers))))
 
-boxes/arch14.08-x64.box: images/arch14.08-x64.iso
+boxes/arch14.11-x64.box: images/arch14.11-x64.iso
 
 
 

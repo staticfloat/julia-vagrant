@@ -50,7 +50,8 @@
         "support/linux_base.sh",
         "support/pac_base.sh",
         "support/vagrant.sh",
-        "support/cleanup.sh"
+        "support/cleanup.sh",
+        "support/secret.sh"
       ],
       "type": "shell"
     }

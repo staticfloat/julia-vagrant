@@ -70,7 +70,8 @@
         "support/apt_base.sh",
         "support/reboot.sh",
         "support/vagrant.sh",
-        "support/cleanup.sh"
+        "support/cleanup.sh",
+        "support/secret.sh"
       ],
       "type": "shell"
     }
