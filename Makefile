@@ -90,6 +90,7 @@ boxes/%.box:
 		OS_TYPE=darwin$$(($$(echo $$NAME | cut -c7-)+4))-64; \
 	fi; \
 	rm -rf output-$$NAME; \
+	echo packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME -var os_type=$$OS_TYPE $$TEMPLATE.packer; \
 	packer build -var md5=$$MD5 -var img=$$IMG -var name=$$NAME -var os_type=$$OS_TYPE $$TEMPLATE.packer; \
 	rm -rf packer_cache;
 
