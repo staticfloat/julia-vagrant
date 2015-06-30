@@ -1,0 +1,8 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "packer-windows/windows_2012_r2_virtualbox.box"
+  config.vm.communicator = "winrm"
+  config.vm.provision "shell", path: "support/cygwin_juliadev.ps1"
+end
